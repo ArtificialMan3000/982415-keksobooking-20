@@ -20,7 +20,7 @@ var MAP_PIN_MAIN_HEIGHT = 84;
 var MAP_FILTERS = document.querySelector('.map__filters');
 // Форма и поля формы
 var AD_FORM = document.querySelector('.ad-form');
-// var AVATAR_FIELD = AD_FORM.querySelector('#avatar');
+var AVATAR_FIELD = AD_FORM.querySelector('#avatar');
 // var TITLE_FIELD = AD_FORM.querySelector('#title');
 var ADDRESS_FIELD = AD_FORM.querySelector('#address');
 var TYPE_FIELD = AD_FORM.querySelector('#type');
@@ -29,7 +29,7 @@ var TIMEIN_FIELD = AD_FORM.querySelector('#timein');
 var TIMEOUT_FIELD = AD_FORM.querySelector('#timeout');
 var ROOM_NUMBER_FIELD = AD_FORM.querySelector('#room_number');
 var CAPACITY_FIELD = AD_FORM.querySelector('#capacity');
-// var IMAGES_FIELD = AD_FORM.querySelector('#images');
+var IMAGES_FIELD = AD_FORM.querySelector('#images');
 // Активна ли страница
 var isActive = false;
 
@@ -333,6 +333,8 @@ var activate = function (advertsData) {
   // Разблокируем поля формы и фильтров
   toggleForm(AD_FORM, false);
   toggleForm(MAP_FILTERS, false);
+  // Оставляем поле адреса заблокированным
+  ADDRESS_FIELD.disabled = true;
   // Убираем затенение с карты
   MAP.classList.remove('map--faded');
   // Убираем затенение с формы
@@ -453,11 +455,11 @@ var checkCapacityFieldValidity = function () {
   }
   if (isCapacityFieldValid) {
     CAPACITY_FIELD.setCustomValidity('');
-    CAPACITY_FIELD.checkValidity();
+    CAPACITY_FIELD.reportValidity();
     return true;
   } else {
     CAPACITY_FIELD.setCustomValidity('Выберите разрешённое количество гостей');
-    CAPACITY_FIELD.checkValidity();
+    CAPACITY_FIELD.reportValidity();
     return false;
   }
 
@@ -528,4 +530,20 @@ ROOM_NUMBER_FIELD.addEventListener('change', function () {
   setCapacityVariants();
   // Проверяем поле выбора количества гостей на валидность
   checkCapacityFieldValidity();
+});
+
+AVATAR_FIELD.addEventListener('change', function (evt) {
+  if (evt.target.files[0].type !== 'image/jpeg' && evt.target.files[0].type !== 'image/png') {
+    evt.target.setCustomValidity('Аватар может быть только изображением в формате jpg или png');
+    evt.target.reportValidity();
+  }
+});
+
+IMAGES_FIELD.addEventListener('change', function (evt) {
+  for (var i = 0; i < evt.target.files.length; i++) {
+    if (evt.target.files[i].type !== 'image/jpeg' && evt.target.files[i].type !== 'image/png') {
+      evt.target.setCustomValidity('Фотографии могут быть только изображениями в формате jpg или png');
+      evt.target.reportValidity();
+    }
+  }
 });
