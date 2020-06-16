@@ -33,37 +33,6 @@ var IMAGES_FIELD = AD_FORM.querySelector('#images');
 // Активна ли страница
 var isActive = false;
 
-// Получает случайное число в указанном диапазоне
-var getRandomNumber = function (min, max) {
-  return Math.floor((Math.random() * (max - min + 1)) + min);
-};
-
-// Получает случайный элемент массива
-var getRandomArrayElement = function (arr) {
-  if (arr) {
-    var arrIndex = getRandomNumber(0, arr.length - 1);
-    return arr[arrIndex];
-  } else {
-    return false;
-  }
-};
-
-// Генерирует массив случайной длины из заданного
-var generateRandomArray = function (arr) {
-  var resArr = [];
-  for (var i = 0; i < arr.length; i++) {
-    if (getRandomNumber(0, 1)) {
-      resArr.push(arr[i]);
-    }
-  }
-  return resArr;
-};
-
-// Делает первый символ строки заглавным
-var uppercaseFirstLetter = function (str) {
-  return str.charAt(0).toUpperCase() + str.substring(1);
-};
-
 // Генерирует массив из 8 случайных объявлений
 var generateAdvertData = function () {
   var advertsData = [];
@@ -99,11 +68,11 @@ var generateAdvertData = function () {
     var advertData = {};
     var advertNumber = i + 1;
     var location = {
-      x: getRandomNumber(0, MAP.offsetWidth),
-      y: getRandomNumber(130, 630)
+      x: window.util.getRandomNumber(0, MAP.offsetWidth),
+      y: window.util.getRandomNumber(130, 630)
     };
-    var roomData = getRandomArrayElement(roomsData);
-    var time = getRandomArrayElement(checkinData);
+    var roomData = window.util.getRandomArrayElement(roomsData);
+    var time = window.util.getRandomArrayElement(checkinData);
 
     advertData.author = {
       'avatar': 'img/avatars/user0' + advertNumber + '.png'
@@ -111,15 +80,15 @@ var generateAdvertData = function () {
     advertData.offer = {
       'title': 'Объявление ' + advertNumber,
       'address': location.x + ', ' + location.y,
-      'price': getRandomNumber(1000, 1000000),
-      'type': getRandomArrayElement(advertTypesEng),
+      'price': window.util.getRandomNumber(1000, 1000000),
+      'type': window.util.getRandomArrayElement(advertTypesEng),
       'rooms': roomData.roomsCount,
       'guests': roomData.guestsCount,
       'checkin': time,
       'checkout': time,
-      'features': generateRandomArray(featuresData),
+      'features': window.util.generateRandomArray(featuresData),
       'description': 'Описание ' + advertNumber,
-      'photos': generateRandomArray(photosData)
+      'photos': window.util.generateRandomArray(photosData)
     };
     advertData.location = {
       'x': location.x,
@@ -215,7 +184,7 @@ var advertCard = {
     }
 
     if (data.offer.type) {
-      popupType.textContent = uppercaseFirstLetter(ADVERT_TYPES[data.offer.type]);
+      popupType.textContent = window.util.uppercaseFirstLetter(ADVERT_TYPES[data.offer.type]);
     } else {
       popupType.remove();
     }
