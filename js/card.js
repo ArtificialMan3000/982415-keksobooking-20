@@ -4,40 +4,37 @@
 window.card = (function () {
   // Шаблон карточки объявления
   var CARD_TEMPLATE = document.querySelector('#card').content;
+  // Карточка объявления
+  var card = null;
 
-  // Создаёт элемент карточки объявления
-  var createAdvertCardElement = function() {
-    return CARD_TEMPLATE.querySelector('.map__card').cloneNode(true);
-  };
-
-  // Создаёт и открывает карточку объявления
-  var openAdvertCard = function (data) {
+  // Создаёт карточку объявления
+  var createCard = function (data) {
     // Удаляем предыдущую карточку
-    if (this.mapCard) {
-      this.removeAdvertCard();
+    if (card) {
+      removeCard();
     }
     // Создаём и заполняем карточку объявления
-    this.mapCard = CARD_TEMPLATE.querySelector('.map__card').cloneNode(true);
-    this.fillAdvertCard(data, this.mapCard);
+    card = CARD_TEMPLATE.querySelector('.map__card').cloneNode(true);
+    fillCard(data);
     // Добавляем обработчики события
-    this.addAdvertCardHandlers();
-    // Выводим попап объявления на карту
-    window.map.MAP.insertAdjacentElement('afterend', this.mapCard);
+    addCardHandlers();
+
+    return card;
   };
 
   // Заполняет карточку объявления из переданных данных
-  var fillAdvertCard = function (data, template) {
-    var popupTitle = template.querySelector('.popup__title');
-    var popupAddress = template.querySelector('.popup__text--address');
-    var popupPrice = template.querySelector('.popup__text--price');
-    var popupType = template.querySelector('.popup__type');
-    var popupCapacity = template.querySelector('.popup__text--capacity');
-    var popupTime = template.querySelector('.popup__text--time');
-    var popupFeatures = template.querySelector('.popup__features');
-    var popupDescription = template.querySelector('.popup__description');
-    var popupPhotos = template.querySelector('.popup__photos');
+  var fillCard = function (data) {
+    var popupTitle = card.querySelector('.popup__title');
+    var popupAddress = card.querySelector('.popup__text--address');
+    var popupPrice = card.querySelector('.popup__text--price');
+    var popupType = card.querySelector('.popup__type');
+    var popupCapacity = card.querySelector('.popup__text--capacity');
+    var popupTime = card.querySelector('.popup__text--time');
+    var popupFeatures = card.querySelector('.popup__features');
+    var popupDescription = card.querySelector('.popup__description');
+    var popupPhotos = card.querySelector('.popup__photos');
     var photoItem = popupPhotos.querySelector('.popup__photo');
-    var popupAvatar = template.querySelector('.popup__avatar');
+    var popupAvatar = card.querySelector('.popup__avatar');
 
     if (data.offer.title) {
       popupTitle.textContent = data.offer.title;
@@ -117,49 +114,25 @@ window.card = (function () {
   };
 
   // Добавляет обработчики событий на карточку объявления
-  var addAdvertCardHandlers = function () {
-    var closeButton = this.mapCard.querySelector('.popup__close');
-
-    var removeAdvertCard = this.removeAdvertCard.bind(this);
+  var addCardHandlers = function () {
+    var closeButton = card.querySelector('.popup__close');
     closeButton.addEventListener('click', function () {
-      removeAdvertCard();
+      removeCard();
     });
-
-    this.advertCardEscPressHandlerCallback = this.advertCardEscPressHandler.bind(this);
-    document.addEventListener('keydown', this.advertCardEscPressHandlerCallback);
+    document.addEventListener('keydown', cardEscPressHandler);
   };
 
   // Удаляет карточку объявления
-  var removeAdvertCard = function () {
-    this.mapCard.remove();
-    document.removeEventListener('keydown', this.advertCardEscPressHandlerCallback);
+  var removeCard = function () {
+    card.remove();
+    document.removeEventListener('keydown', cardEscPressHandler);
   };
 
-  var advertCardEscPressHandler =  function () {
-    this.removeAdvertCard();
+  var cardEscPressHandler = function () {
+    removeCard();
   };
 
-  // Блокирует или активирует все поля формы
-  var toggleForm = function (form, disable) {
-    if (!form) {
-      return;
-    }
-    var formInputs = form.querySelectorAll('input');
-    var formSelects = form.querySelectorAll('select');
-    var formTextareas = form.querySelectorAll('textarea');
-    var formButtons = form.querySelectorAll('button');
-
-    for (var i = 0; i < formInputs.length; i++) {
-      formInputs[i].disabled = disable;
-    }
-    for (i = 0; i < formSelects.length; i++) {
-      formSelects[i].disabled = disable;
-    }
-    for (i = 0; i < formTextareas.length; i++) {
-      formTextareas[i].disabled = disable;
-    }
-    for (i = 0; i < formButtons.length; i++) {
-      formButtons[i].disabled = disable;
-    }
+  return {
+    createCard: createCard,
   };
 })();

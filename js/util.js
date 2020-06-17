@@ -33,10 +33,35 @@ window.util = (function () {
     return str.charAt(0).toUpperCase() + str.substring(1);
   };
 
+  // Блокирует или активирует все поля формы
+  var toggleForm = function (form, disable) {
+    if (!form) {
+      return;
+    }
+    var formInputs = form.querySelectorAll('input');
+    var formSelects = form.querySelectorAll('select');
+    var formTextareas = form.querySelectorAll('textarea');
+    var formButtons = form.querySelectorAll('button');
+
+    for (var i = 0; i < formInputs.length; i++) {
+      formInputs[i].disabled = disable;
+    }
+    for (i = 0; i < formSelects.length; i++) {
+      formSelects[i].disabled = disable;
+    }
+    for (i = 0; i < formTextareas.length; i++) {
+      formTextareas[i].disabled = disable;
+    }
+    for (i = 0; i < formButtons.length; i++) {
+      formButtons[i].disabled = disable;
+    }
+  };
+
   return {
     getRandomNumber: getRandomNumber,
     getRandomArrayElement: getRandomArrayElement,
     generateRandomArray: generateRandomArray,
-    uppercaseFirstLetter: uppercaseFirstLetter
+    uppercaseFirstLetter: uppercaseFirstLetter,
+    toggleForm: toggleForm,
   };
 })();

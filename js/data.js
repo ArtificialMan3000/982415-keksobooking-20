@@ -76,7 +76,7 @@ window.data = (function () {
   };
 
   // Генерируем массив объявлений
-  var advertsData = window.data.generateAdvertData();
+  var advertsData = generateAdvertData();
 
   return {
     ADVERT_TYPES: ADVERT_TYPES,
