@@ -1,5 +1,6 @@
 'use strict';
 
+// Утилитарные функции
 window.util = (function () {
   // Получает случайное число в указанном диапазоне
   var getRandomNumber = function (min, max) {
