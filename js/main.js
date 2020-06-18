@@ -4,5 +4,5 @@
 window.page.deactivate();
 
 // Активируем сайт
-window.page.activate();
+// window.page.activate();
 
