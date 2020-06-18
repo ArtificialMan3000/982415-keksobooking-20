@@ -14,6 +14,8 @@ window.advertForm = (function () {
   var ROOM_NUMBER_FIELD = AD_FORM.querySelector('#room_number');
   var CAPACITY_FIELD = AD_FORM.querySelector('#capacity');
   var IMAGES_FIELD = AD_FORM.querySelector('#images');
+  // Текущее значение поля адрес
+  var currAddress = '';
 
   // Отключает форму
   var disableAdvertForm = function () {
@@ -40,6 +42,9 @@ window.advertForm = (function () {
   // Устанавливает значение в поле адреса
   var setAddressValue = function () {
     var coords = window.pin.getPinCoords();
+    coords.x = Math.round(coords.x);
+    coords.y = Math.round(coords.y);
+
     currAddress = coords.x + ', ' + coords.y;
     ADDRESS_FIELD.value = currAddress;
     return currAddress;
@@ -127,6 +132,46 @@ window.advertForm = (function () {
     }
   };
 
+  // Инициализирует форму
+  var initAdvertForm = function () {
+    // Устанавливаем адрес главной метки
+    setAddressValue();
+    // Устанавливаем минимальное значение цены
+    setMinPriceValue();
+    // Устанавлием время выезда, соответствующее времени заезда
+    setCheckoutValue();
+    // Устанавливаем разрешённые варианты выбора количества гостей
+    setCapacityVariants();
+
+    // Запрещаем изменять вручную поле адреса
+    ADDRESS_FIELD.addEventListener('input', function () {
+      ADDRESS_FIELD.value = currAddress;
+    });
+
+    // При изменении типа жилья устанавливаем новую минимальную цену
+    TYPE_FIELD.addEventListener('change', function () {
+      setMinPriceValue();
+    });
+
+    // При изменении времени заезда, устанавливаем новое время выезда
+    TIMEIN_FIELD.addEventListener('change', function () {
+      setCheckoutValue();
+    });
+
+    // При изменении времени выезда, устанавливаем новое время заезда
+    TIMEOUT_FIELD.addEventListener('change', function () {
+      setCheckinValue();
+    });
+
+    // При изменени количества комнат, устанавливаем разрешённые варианты выбора количества гостей
+    ROOM_NUMBER_FIELD.addEventListener('change', function () {
+      setCapacityVariants();
+    });
+
+    // Устанавливаем правила для валидации формы
+    setAdvertFormValidation();
+  };
+
   // Проверяет поле выбора количества гостей на валидность
   var checkCapacityFieldValidity = function () {
     var isCapacityFieldValid = true;
@@ -144,85 +189,63 @@ window.advertForm = (function () {
       CAPACITY_FIELD.reportValidity();
       return false;
     }
-
   };
 
-  // Устанавливаем адрес главной метки
-  var currAddress = setAddressValue();
-  // Устанавливаем минимальное значение цены
-  setMinPriceValue();
-  // Устанавлием время выезда, соответствующее времени заезда
-  setCheckoutValue();
-  // Устанавливаем разрешённые варианты выбора количества гостей
-  setCapacityVariants();
-
-  // Запрещаем изменять вручную поле адреса
-  ADDRESS_FIELD.addEventListener('input', function () {
-    ADDRESS_FIELD.value = currAddress;
-  });
-  // При изменении типа жилья устанавливаем новую минимальную цену
-  TYPE_FIELD.addEventListener('change', function () {
-    setMinPriceValue();
-  });
-
-  // При изменении времени заезда, устанавливаем новое время выезда
-  TIMEIN_FIELD.addEventListener('change', function () {
-    setCheckoutValue();
-  });
-
-  // При изменении времени выезда, устанавливаем новое время заезда
-  TIMEOUT_FIELD.addEventListener('change', function () {
-    setCheckinValue();
-  });
-
-  // При изменени количества комнат, устанавливаем разрешённые варианты выбора количества гостей
-  ROOM_NUMBER_FIELD.addEventListener('change', function () {
-    setCapacityVariants();
-    // Проверяем поле выбора количества гостей на валидность
-    checkCapacityFieldValidity();
-  });
-
-  // Валидация
-  // При изменении значения поля выбора количества гостей проверяем его на валидность
-  CAPACITY_FIELD.addEventListener('change', function () {
-    checkCapacityFieldValidity();
-  });
-
-  // Проверка, является ли загруженный аватар изображением
-  AVATAR_FIELD.addEventListener('change', function (evt) {
-    if (evt.target.files[0].type !== 'image/jpeg' && evt.target.files[0].type !== 'image/png') {
-      evt.target.setCustomValidity('Аватар может быть только изображением в формате jpg или png');
-      evt.target.reportValidity();
-    } else {
-      evt.target.setCustomValidity('');
-      evt.target.reportValidity();
-    }
-  });
-
-  // Проверка, являются ли загруженные фотографии изображениями
-  IMAGES_FIELD.addEventListener('change', function (evt) {
-    var isInvalid = false;
-    for (var i = 0; i < evt.target.files.length; i++) {
-      if (evt.target.files[i].type !== 'image/jpeg' && evt.target.files[i].type !== 'image/png') {
-        isInvalid = true;
+  // Проверяет валидность загруженных изображений
+  var checkImagesValidity = function (images) {
+    for (var i = 0; i < images.length; i++) {
+      if (images[i].type !== 'image/jpeg' && images[i].type !== 'image/png') {
+        return false;
       }
-      if (isInvalid) {
+    }
+    return true;
+  };
+
+  // Устанавливает правила для валидации формы
+  var setAdvertFormValidation = function () {
+    // Проверка, является ли загруженный аватар изображением
+    AVATAR_FIELD.addEventListener('change', function (evt) {
+      if (!checkImagesValidity(evt.target.files)) {
+        evt.target.setCustomValidity('Аватар может быть только изображением в формате jpg или png');
+        evt.target.reportValidity();
+      } else {
+        evt.target.setCustomValidity('');
+        evt.target.reportValidity();
+      }
+    });
+
+    // Проверка, являются ли загруженные фотографии изображениями
+    IMAGES_FIELD.addEventListener('change', function (evt) {
+      if (!checkImagesValidity(evt.target.files)) {
         evt.target.setCustomValidity('Фотографии могут быть только изображениями в формате jpg или png');
         evt.target.reportValidity();
       } else {
         evt.target.setCustomValidity('');
         evt.target.reportValidity();
       }
-    }
-  });
+    });
 
-  // Дополнительные проверки на валидность при отправке формы
-  AD_FORM.addEventListener('submit', function (evt) {
-    if (!checkCapacityFieldValidity()) {
-      evt.preventDefault();
-    }
-    AD_FORM.reportValidity();
-  });
+    // При изменении значения поля выбора количества комнат
+    // проверяем на валидность поле выбора количества гостей
+    ROOM_NUMBER_FIELD.addEventListener('change', function () {
+      checkCapacityFieldValidity();
+    });
+
+    // При изменении значения поля выбора количества гостей проверяем его на валидность
+    CAPACITY_FIELD.addEventListener('change', function () {
+      checkCapacityFieldValidity();
+    });
+
+    // Дополнительные проверки на валидность при отправке формы
+    AD_FORM.addEventListener('submit', function (evt) {
+      if (!checkCapacityFieldValidity()) {
+        evt.preventDefault();
+      }
+      AD_FORM.reportValidity();
+    });
+  };
+
+  initAdvertForm();
 
   return {
     disableAdvertForm: disableAdvertForm,
