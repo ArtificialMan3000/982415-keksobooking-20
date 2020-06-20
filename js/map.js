@@ -14,11 +14,11 @@ window.map = (function () {
   var MAP_PINS_BOTTOM = 630;
 
   // Отрисовывает метки на карте
-  var renderPins = function () {
+  var renderPins = function (data) {
     var mapPinFragment = document.createDocumentFragment();
-    var pins = window.pin.createPins();
+    var pins = window.pin.createPins(data);
     for (var i = 0; i < pins.length; i++) {
-      mapPinFragment.appendChild(window.pin.pins[i]);
+      mapPinFragment.appendChild(pins[i]);
     }
 
     MAP_PINS.appendChild(mapPinFragment);
@@ -62,7 +62,6 @@ window.map = (function () {
 
   return {
     MAP: MAP,
-    MAP_PINS: MAP_PINS,
     renderPins: renderPins,
     uncoverMap: uncoverMap,
     coverMap: coverMap,

@@ -3,13 +3,13 @@
 // Управляет активностью страницы
 window.page = (function () {
   // Активна ли страница
-  // var isActive = false;
+  // var isPageActive = false;
   // Деактивирует страницу
   var deactivate = function () {
     // Блокируем поля формы и фильтров
     window.advertForm.disableAdvertForm();
     window.filters.disableFilters();
-    // isActive = false;
+    // isPageActive = false;
   };
 
   // Активирует страницу
@@ -23,8 +23,8 @@ window.page = (function () {
     // Убираем затенение с формы
     window.advertForm.uncoverAdvertForm();
     // Отрисовываем метки
-    window.map.renderPins();
-    // isActive = true;
+    window.data.loadAdvertData(window.map.renderPins);
+    // isPageActive = true;
   };
 
   return {
