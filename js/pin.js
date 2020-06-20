@@ -11,6 +11,10 @@ window.pin = (function () {
   var isMainPinActive = false;
   // Шаблон метки объявления
   var PIN_TEMPLATE = document.querySelector('#pin').content;
+  // Набор меток
+  var pins = [];
+  // Перемещается ли в данный момент главная метка
+  var isMainPinDragged = false;
 
   // Создаёт метку по шаблону на основе переданных данных
   var createPin = function (data) {
@@ -32,10 +36,10 @@ window.pin = (function () {
   };
 
   // Создаёт массив меток в соответствии с данными
-  var createPins = function () {
-    var pins = [];
-    for (var i = 0; i < window.data.advertsData.length; i++) {
-      var pin = createPin(window.data.advertsData[i]);
+  var createPins = function (data) {
+    pins = [];
+    for (var i = 0; i < data.length; i++) {
+      var pin = createPin(data[i]);
       pins.push(pin);
     }
     return pins;
@@ -70,15 +74,19 @@ window.pin = (function () {
   var setMainPinActivateHandlers = function () {
     MAIN_PIN.addEventListener('mousedown', function (evt) {
       if (evt.button === 0) {
+        evt.preventDefault();
         window.page.activate();
         isMainPinActive = true;
         window.advertForm.setAddressValue();
       }
     });
-    MAIN_PIN.addEventListener('click', function () {
-      window.page.activate();
-      isMainPinActive = true;
-      window.advertForm.setAddressValue();
+    MAIN_PIN.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      if (!isMainPinDragged) {
+        window.page.activate();
+        isMainPinActive = true;
+        window.advertForm.setAddressValue();
+      }
     });
   };
 
@@ -86,12 +94,15 @@ window.pin = (function () {
   var setMainPinDragAndDropHandlers = function () {
     MAIN_PIN.addEventListener('mousedown', function (evt) {
       if (evt.button === 0) {
-        // evt.preventDefault();
+        evt.preventDefault();
+        isMainPinDragged = false;
         var startCoords = {
           x: evt.clientX,
           y: evt.clientY,
         };
         var mainPinMouseMoveHandler = function (moveEvt) {
+          moveEvt.preventDefault();
+          isMainPinDragged = true;
           var shift = {
             x: startCoords.x - moveEvt.clientX,
             y: startCoords.y - moveEvt.clientY,
@@ -104,7 +115,8 @@ window.pin = (function () {
           var mainPinY = MAIN_PIN.offsetTop - shift.y;
           moveMainPin(mainPinX, mainPinY);
         };
-        var mainPinMouseUpHandler = function () {
+        var mainPinMouseUpHandler = function (upEvt) {
+          upEvt.preventDefault();
           window.advertForm.setAddressValue();
           document.removeEventListener('mousemove', mainPinMouseMoveHandler);
           document.removeEventListener('mouseup', mainPinMouseUpHandler);
@@ -123,8 +135,6 @@ window.pin = (function () {
     setMainPinDragAndDropHandlers();
   };
 
-  var pins = createPins();
-
   // Задаём поведение главной метки
   setMainPinBehavior();
 
@@ -135,6 +145,5 @@ window.pin = (function () {
     createPin: createPin,
     createPins: createPins,
     getPinCoords: getPinCoords,
-    pins: pins,
   };
 })();
