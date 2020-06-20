@@ -248,7 +248,6 @@ window.advertForm = (function () {
   initAdvertForm();
 
   return {
-    currAddress: currAddress,
     disableAdvertForm: disableAdvertForm,
     enableAdvertForm: enableAdvertForm,
     uncoverAdvertForm: uncoverAdvertForm,

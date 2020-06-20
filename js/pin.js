@@ -139,10 +139,6 @@ window.pin = (function () {
   setMainPinBehavior();
 
   return {
-    MAIN_PIN: MAIN_PIN,
-    MAIN_PIN_WIDTH: MAIN_PIN_WIDTH,
-    MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT,
-    createPin: createPin,
     createPins: createPins,
     getPinCoords: getPinCoords,
   };

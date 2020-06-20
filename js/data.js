@@ -9,8 +9,6 @@ window.data = (function () {
     'house': 'дом',
     'bungalo': 'бунгало',
   };
-  // Массив объявлений
-  var advertsData = [];
 
   // Генерирует массив из 8 случайных объявлений
   // var generateAdvertData = function () {
@@ -99,7 +97,6 @@ window.data = (function () {
 
   return {
     ADVERT_TYPES: ADVERT_TYPES,
-    advertsData: advertsData,
     loadAdvertData: loadAdvertData,
   };
 })();

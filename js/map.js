@@ -62,7 +62,6 @@ window.map = (function () {
 
   return {
     MAP: MAP,
-    MAP_PINS: MAP_PINS,
     renderPins: renderPins,
     uncoverMap: uncoverMap,
     coverMap: coverMap,
