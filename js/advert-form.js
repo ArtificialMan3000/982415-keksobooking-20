@@ -4,6 +4,8 @@
 window.advertForm = (function () {
   // Форма и поля формы
   var AD_FORM = document.querySelector('.ad-form');
+  var SUBMIT_BUTTON = AD_FORM.querySelector('.ad-form__submit');
+  var RESET_BUTTON = AD_FORM.querySelector('.ad-form__reset');
   var AVATAR_FIELD = AD_FORM.querySelector('#avatar');
   // var TITLE_FIELD = AD_FORM.querySelector('#title');
   var ADDRESS_FIELD = AD_FORM.querySelector('#address');
@@ -13,7 +15,11 @@ window.advertForm = (function () {
   var TIMEOUT_FIELD = AD_FORM.querySelector('#timeout');
   var ROOM_NUMBER_FIELD = AD_FORM.querySelector('#room_number');
   var CAPACITY_FIELD = AD_FORM.querySelector('#capacity');
+  // var CHECKIN_FIELD = AD_FORM.querySelector('#timein');
+  // var CHECKOUT_FIELD = AD_FORM.querySelector('#timeout');
+  // var FEATURES_FIELDS = AD_FORM.querySelectorAll('.feature__checkbox');
   var IMAGES_FIELD = AD_FORM.querySelector('#images');
+  // var DESCRIPTION_FIELD = AD_FORM.querySelector('#description');
   // Текущее значение поля адрес
   var currAddress = '';
 
@@ -34,9 +40,27 @@ window.advertForm = (function () {
     AD_FORM.classList.remove('ad-form--disabled');
   };
 
-  // Затененяет форму
+  // Затеняет форму
   var coverAdvertForm = function () {
     AD_FORM.classList.add('ad-form--disabled');
+  };
+
+  // Сбрасывает форму
+  var resetAdvertForm = function () {
+    AD_FORM.reset();
+
+    // Устанавливаем адрес главной метки
+    setAddressValue();
+    // Устанавливаем минимальное значение цены
+    setMinPriceValue();
+    // Устанавлием время выезда, соответствующее времени заезда
+    setCheckoutValue();
+    // Устанавливаем разрешённые варианты выбора количества гостей
+    setCapacityVariants();
+    // Блокируем форму
+    disableAdvertForm();
+    // Затеняем форму
+    coverAdvertForm();
   };
 
   // Устанавливает значение в поле адреса
@@ -101,6 +125,7 @@ window.advertForm = (function () {
   // Устанавливает разрешённые варианты выбора количества гостей
   var setCapacityVariants = function () {
     disableCapacityVariants();
+
     switch (ROOM_NUMBER_FIELD.value) {
       case '100':
         for (var i = 0; i < CAPACITY_FIELD.length; i++) {
@@ -125,7 +150,7 @@ window.advertForm = (function () {
         break;
       case '1':
         for (i = 0; i < CAPACITY_FIELD.length; i++) {
-          if (CAPACITY_FIELD[i].value <= 1 && CAPACITY_FIELD[i].value !== '0') {
+          if (CAPACITY_FIELD[i].value === '1') {
             CAPACITY_FIELD[i].disabled = false;
           }
         }
@@ -166,6 +191,12 @@ window.advertForm = (function () {
     // При изменени количества комнат, устанавливаем разрешённые варианты выбора количества гостей
     ROOM_NUMBER_FIELD.addEventListener('change', function () {
       setCapacityVariants();
+    });
+
+    // Сброс формы
+    RESET_BUTTON.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      window.page.deactivate();
     });
 
     // Устанавливаем правила для валидации формы
@@ -237,21 +268,26 @@ window.advertForm = (function () {
     });
 
     // Дополнительные проверки на валидность при отправке формы
-    AD_FORM.addEventListener('submit', function (evt) {
-      if (!checkCapacityFieldValidity()) {
-        evt.preventDefault();
+    SUBMIT_BUTTON.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      if (checkCapacityFieldValidity() && AD_FORM.reportValidity()) {
+        window.data.uploadAdvertFormData(function () {
+          window.notice.showSuccessMessage();
+          window.page.deactivate();
+        });
       }
-      AD_FORM.reportValidity();
     });
   };
 
   initAdvertForm();
 
   return {
+    AD_FORM: AD_FORM,
     disableAdvertForm: disableAdvertForm,
     enableAdvertForm: enableAdvertForm,
     uncoverAdvertForm: uncoverAdvertForm,
     coverAdvertForm: coverAdvertForm,
+    resetAdvertForm: resetAdvertForm,
     setAddressValue: setAddressValue,
   };
 })();

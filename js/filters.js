@@ -15,8 +15,15 @@ window.filters = (function () {
     window.util.toggleForm(MAP_FILTERS, false);
   };
 
+  // Очищает фильтры
+  var resetFilters = function () {
+    MAP_FILTERS.reset();
+    disableFilters();
+  };
+
   return {
     disableFilters: disableFilters,
     enableFilters: enableFilters,
+    resetFilters: resetFilters,
   };
 })();

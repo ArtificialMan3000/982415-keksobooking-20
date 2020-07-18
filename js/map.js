@@ -12,11 +12,19 @@ window.map = (function () {
   var MAP_PINS_TOP = 130;
   // Нижняя граница секции с метками в пикселях
   var MAP_PINS_BOTTOM = 630;
+  // Центральная точка секции с метками в пикселях
+  var MAP_PINS_CENTER = {
+    x: 603,
+    y: 409
+  };
 
   // Отрисовывает метки на карте
-  var renderPins = function (data) {
+  var renderPinsOnMap = function (data) {
     var mapPinFragment = document.createDocumentFragment();
-    var pins = window.pin.createPins(data);
+    var pins = window.pin.getPins();
+    if (pins.length === 0) {
+      pins = window.pin.createPins(data);
+    }
     for (var i = 0; i < pins.length; i++) {
       mapPinFragment.appendChild(pins[i]);
     }
@@ -24,20 +32,32 @@ window.map = (function () {
     MAP_PINS.appendChild(mapPinFragment);
   };
 
+  // Убирает метки с карты
+  var removePinsFromMap = function () {
+    window.pin.removePins();
+  };
+
   // Убирает затенение с карты
   var uncoverMap = function () {
     MAP.classList.remove('map--faded');
+    window.pin.activateMainPin();
   };
 
   // Затененяет карту
   var coverMap = function () {
     MAP.classList.add('map--faded');
+    window.pin.deactivateMainPin();
   };
 
-  // Отрисовывает карточку объявления
-  var renderCard = function (data) {
+  // Отрисовывает карточку объявления на карте
+  var renderCardOnMap = function (data) {
     var card = window.card.createCard(data);
     MAP_PINS.insertAdjacentElement('afterend', card);
+  };
+
+  // Убирает карточку объявления с карты
+  var removeCardFromMap = function () {
+    window.card.removeCard();
   };
 
   // Проверяет переданные координаты объекта на карте и возвращает предельно допустимые
@@ -60,12 +80,29 @@ window.map = (function () {
     return resCoords;
   };
 
+  // Центрирует главную метку
+  var centerMainPin = function () {
+    window.pin.moveMainPin(MAP_PINS_CENTER.x, MAP_PINS_CENTER.y);
+  };
+
+  // Сбрасывает карту
+  var resetMap = function () {
+    // Затеняем карту
+    coverMap();
+    // Удаляем открытую карточку
+    removeCardFromMap();
+    // Удаляем метки
+    removePinsFromMap();
+    // Центрируем главную метку
+    centerMainPin();
+  };
+
   return {
     MAP: MAP,
-    renderPins: renderPins,
+    renderPinsOnMap: renderPinsOnMap,
     uncoverMap: uncoverMap,
-    coverMap: coverMap,
-    renderCard: renderCard,
+    renderCardOnMap: renderCardOnMap,
     checkCoords: checkCoords,
+    resetMap: resetMap,
   };
 })();
