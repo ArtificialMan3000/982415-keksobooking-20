@@ -124,7 +124,9 @@ window.card = (function () {
 
   // Удаляет карточку объявления
   var removeCard = function () {
-    card.remove();
+    if (card) {
+      card.remove();
+    }
     document.removeEventListener('keydown', cardEscPressHandler);
   };
 
@@ -134,5 +136,6 @@ window.card = (function () {
 
   return {
     createCard: createCard,
+    removeCard: removeCard,
   };
 })();

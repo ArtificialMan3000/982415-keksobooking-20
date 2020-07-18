@@ -57,11 +57,41 @@ window.util = (function () {
     }
   };
 
+  // Очищает все поля формы
+  // var clearForm = function (form) {
+  //   var formTexts = form.querySelectorAll('input[type=text]');
+  //   var formCheckboxes = form.querySelectorAll('input[type=checkbox]');
+  //   var formRadios = form.querySelectorAll('input[type=radio]');
+  //   var formFiles = form.querySelectorAll('input[type=file');
+  //   var formSelects = form.querySelectorAll('select');
+  //   var formTextareas = form.querySelectorAll('textarea');
+
+  //   for (var i = 0; i < formTexts.length; i++) {
+  //     formTexts[i].value = '';
+  //   }
+  //   for (i = 0; i < formCheckboxes.length; i++) {
+  //     formCheckboxes[i].checked = false;
+  //   }
+  //   for (i = 0; i < formRadios.length; i++) {
+  //     formRadios[i].checked = false;
+  //   }
+  //   for (i = 0; i < formFiles.length; i++) {
+  //     formFiles[i].value = '';
+  //   }
+  //   for (i = 0; i < formSelects.length; i++) {
+  //     formSelects[i].value = '';
+  //   }
+  //   for (i = 0; i < formTextareas.length; i++) {
+  //     formTextareas[i].value = '';
+  //   }
+  // };
+
   return {
     getRandomNumber: getRandomNumber,
     getRandomArrayElement: getRandomArrayElement,
     generateRandomArray: generateRandomArray,
     uppercaseFirstLetter: uppercaseFirstLetter,
     toggleForm: toggleForm,
+    // clearForm: clearForm,
   };
 })();

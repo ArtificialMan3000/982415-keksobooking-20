@@ -29,7 +29,7 @@ window.pin = (function () {
 
     // Вешаем на метку обработчик клика, открывающий карточку объявления
     pin.addEventListener('click', function () {
-      window.map.renderCard(data);
+      window.map.renderCardOnMap(data);
     });
 
     return pin;
@@ -45,29 +45,71 @@ window.pin = (function () {
     return pins;
   };
 
+  // Удаляет метки
+  var removePins = function () {
+    for (var i = 0; i < pins.length; i++) {
+      pins[i].remove();
+    }
+  };
+
+  // Получает массив меток
+  var getPins = function () {
+    return pins;
+  };
+
   // Определение координаты главной метки
   var getPinCoords = function () {
+    return transformCSSToPointMainPinCoords(MAIN_PIN.offsetLeft, MAIN_PIN.offsetTop);
+  };
+
+  // Устанавливает флаг активности главной метки
+  var activateMainPin = function () {
+    isMainPinActive = true;
+  };
+
+  // Снимает флаг активности главной метки
+  var deactivateMainPin = function () {
+    isMainPinActive = false;
+  };
+
+  // Преобразует CSS координаты главной метки в координаты указателя
+  var transformCSSToPointMainPinCoords = function (x, y) {
     var coords = {};
-    if (!isMainPinActive) {
-      coords.x = MAIN_PIN.offsetLeft + MAIN_PIN_WIDTH / 2;
-      coords.y = MAIN_PIN.offsetTop + MAIN_PIN_WIDTH / 2;
+
+    if (isMainPinActive) {
+      coords.x = x + MAIN_PIN_WIDTH / 2;
+      coords.y = y + MAIN_PIN_HEIGHT;
     } else {
-      coords.x = MAIN_PIN.offsetLeft + MAIN_PIN_WIDTH / 2;
-      coords.y = MAIN_PIN.offsetTop + MAIN_PIN_HEIGHT;
+      coords.x = x + MAIN_PIN_WIDTH / 2;
+      coords.y = y + MAIN_PIN_WIDTH / 2;
     }
     return coords;
   };
 
-  // Перемещает главную метку в указанные координаты
+  // Преобразует координаты указателя главной метки в CSS координаты
+  var transformPointToCSSMainPinCoords = function (x, y) {
+    var coords = {};
+    if (isMainPinActive) {
+      coords.x = x - MAIN_PIN_WIDTH / 2;
+      coords.y = y - MAIN_PIN_HEIGHT;
+    } else {
+      coords.x = x - MAIN_PIN_WIDTH / 2;
+      coords.y = y - MAIN_PIN_WIDTH / 2;
+    }
+    return coords;
+  };
+
+  // Перемещает указатель главной метки в указанные координаты
   var moveMainPin = function (x, y) {
+    // console.log(isMainPinActive);
+
     // Координаты указателя метки
-    var pinPointCoords = {
-      x: x + (MAIN_PIN_WIDTH / 2),
-      y: y + MAIN_PIN_HEIGHT
-    };
-    var coords = window.map.checkCoords(pinPointCoords.x, pinPointCoords.y);
-    MAIN_PIN.style.left = (coords.x - (MAIN_PIN_WIDTH / 2)) + 'px';
-    MAIN_PIN.style.top = (coords.y - MAIN_PIN_HEIGHT) + 'px';
+    var coords = window.map.checkCoords(x, y);
+    // console.log(coords);
+
+    var CSSCoords = transformPointToCSSMainPinCoords(coords.x, coords.y);
+    MAIN_PIN.style.left = CSSCoords.x + 'px';
+    MAIN_PIN.style.top = CSSCoords.y + 'px';
   };
 
   // Устанавливает на главную метку обработчики, активирующие страницу
@@ -75,16 +117,18 @@ window.pin = (function () {
     MAIN_PIN.addEventListener('mousedown', function (evt) {
       if (evt.button === 0) {
         evt.preventDefault();
-        window.page.activate();
-        isMainPinActive = true;
+        if (!window.page.checkPageActive()) {
+          window.page.activate();
+        }
         window.advertForm.setAddressValue();
       }
     });
     MAIN_PIN.addEventListener('click', function (evt) {
       evt.preventDefault();
       if (!isMainPinDragged) {
-        window.page.activate();
-        isMainPinActive = true;
+        if (!window.page.checkPageActive()) {
+          window.page.activate();
+        }
         window.advertForm.setAddressValue();
       }
     });
@@ -113,7 +157,8 @@ window.pin = (function () {
           };
           var mainPinX = MAIN_PIN.offsetLeft - shift.x;
           var mainPinY = MAIN_PIN.offsetTop - shift.y;
-          moveMainPin(mainPinX, mainPinY);
+          var pointCoords = transformCSSToPointMainPinCoords(mainPinX, mainPinY);
+          moveMainPin(pointCoords.x, pointCoords.y);
         };
         var mainPinMouseUpHandler = function (upEvt) {
           upEvt.preventDefault();
@@ -140,6 +185,11 @@ window.pin = (function () {
 
   return {
     createPins: createPins,
+    removePins: removePins,
     getPinCoords: getPinCoords,
+    moveMainPin: moveMainPin,
+    activateMainPin: activateMainPin,
+    deactivateMainPin: deactivateMainPin,
+    getPins: getPins,
   };
 })();

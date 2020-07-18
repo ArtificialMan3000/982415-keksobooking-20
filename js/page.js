@@ -3,13 +3,16 @@
 // Управляет активностью страницы
 window.page = (function () {
   // Активна ли страница
-  // var isPageActive = false;
+  var isPageActive = false;
   // Деактивирует страницу
   var deactivate = function () {
+    // Сбрасываем карту
+    window.map.resetMap();
+    // Сбрасываем форму и фильтры
+    window.advertForm.resetAdvertForm();
+    window.filters.resetFilters();
     // Блокируем поля формы и фильтров
-    window.advertForm.disableAdvertForm();
-    window.filters.disableFilters();
-    // isPageActive = false;
+    isPageActive = false;
   };
 
   // Активирует страницу
@@ -23,12 +26,18 @@ window.page = (function () {
     // Убираем затенение с формы
     window.advertForm.uncoverAdvertForm();
     // Отрисовываем метки
-    window.data.loadAdvertData(window.map.renderPins);
-    // isPageActive = true;
+    window.data.loadAdvertData(window.map.renderPinsOnMap);
+    isPageActive = true;
+  };
+
+  // Проверяет, активна ли страница
+  var checkPageActive = function () {
+    return isPageActive;
   };
 
   return {
     deactivate: deactivate,
     activate: activate,
+    checkPageActive: checkPageActive,
   };
 })();

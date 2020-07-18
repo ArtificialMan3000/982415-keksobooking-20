@@ -78,25 +78,44 @@ window.data = (function () {
   // };
 
   // Загружает список объявлений с сервера
-  var loadAdvertData = function (successHandler) {
-    var errorHandler = function (message) {
-      var node = document.createElement('div');
-      node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-      node.style.position = 'absolute';
-      node.style.left = 0;
-      node.style.right = 0;
-      node.style.fontSize = '30px';
+  var loadAdvertData = function (successHandler, errorHandler) {
+    if (!errorHandler) {
+      errorHandler = function (message) {
+        var node = document.createElement('div');
+        node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+        node.style.position = 'absolute';
+        node.style.left = 0;
+        node.style.right = 0;
+        node.style.fontSize = '30px';
 
-      node.textContent = message;
-      document.body.insertAdjacentElement('afterbegin', node);
-    };
+        node.textContent = message;
+        document.body.insertAdjacentElement('afterbegin', node);
+      };
+    }
 
     window.ajax.load('https://javascript.pages.academy/keksobooking/data', successHandler, errorHandler);
+  };
+
+  // Отправляет данные формы на сервер
+  var uploadAdvertFormData = function (successHandler, errorHandler) {
+    var advertFormData = new FormData(window.advertForm.AD_FORM);
+    if (!successHandler) {
+      successHandler = function () {
+        window.notice.showSuccessMessage();
+      };
+    }
+    if (!errorHandler) {
+      errorHandler = function () {
+        window.notice.showErrorMessage();
+      };
+    }
+    window.ajax.upload(advertFormData, 'https://javascript.pages.academy/keksobooking', successHandler, errorHandler);
   };
 
 
   return {
     ADVERT_TYPES: ADVERT_TYPES,
     loadAdvertData: loadAdvertData,
+    uploadAdvertFormData: uploadAdvertFormData,
   };
 })();
