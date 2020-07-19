@@ -55,7 +55,6 @@ window.filters = (function () {
 
   // Применяет фильтры к показываемым объявлениям
   var applyFilters = function (data) {
-    var filteredData = data;
     var type = Filters.TYPE.value;
     var priceRange = Filters.PRICE.value;
     var rooms = Filters.ROOMS.value;
@@ -67,6 +66,7 @@ window.filters = (function () {
       .map(function (featureElem) {
         return featureElem.value;
       });
+    var filteredData = data;
     filteredData = data.filter(function (elem) {
       if (type !== 'any' && type !== elem.offer.type) {
         return false;
@@ -95,9 +95,10 @@ window.filters = (function () {
   };
 
   // Обработчик изменения фильтров
-  var filterChangeHandler = function () {
-    applyFilters(window.data.getAdvertData());
-  };
+  var filterChangeHandler = window.debounce.removeDebounce(function () {
+    var advertData = window.data.getAdvertData();
+    applyFilters(advertData);
+  });
 
   // Устанавливает обработчики на изменение фильтров
   var setFiltersHandlers = function () {
