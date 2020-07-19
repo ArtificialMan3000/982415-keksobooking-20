@@ -53,9 +53,9 @@ window.pin = (function () {
   };
 
   // Получает массив меток
-  var getPins = function () {
-    return pins;
-  };
+  // var getPins = function () {
+  //   return pins;
+  // };
 
   // Определение координаты главной метки
   var getPinCoords = function () {
@@ -190,6 +190,6 @@ window.pin = (function () {
     moveMainPin: moveMainPin,
     activateMainPin: activateMainPin,
     deactivateMainPin: deactivateMainPin,
-    getPins: getPins,
+    // getPins: getPins,
   };
 })();
