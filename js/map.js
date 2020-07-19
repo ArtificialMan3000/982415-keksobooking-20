@@ -21,10 +21,11 @@ window.map = (function () {
   // Отрисовывает метки на карте
   var renderPinsOnMap = function (data) {
     var mapPinFragment = document.createDocumentFragment();
-    var pins = window.pin.getPins();
-    if (pins.length === 0) {
-      pins = window.pin.createPins(data);
-    }
+    // var pins = window.pin.getPins();
+    // if (pins.length === 0) {
+    //   pins = window.pin.createPins(data);
+    // }
+    var pins = window.pin.createPins(data);
     for (var i = 0; i < pins.length; i++) {
       mapPinFragment.appendChild(pins[i]);
     }
@@ -35,6 +36,13 @@ window.map = (function () {
   // Убирает метки с карты
   var removePinsFromMap = function () {
     window.pin.removePins();
+  };
+
+  // Обновляет метки на карте
+  var updatePinsOnMap = function (data) {
+    removePinsFromMap();
+    removeCardFromMap();
+    renderPinsOnMap(data);
   };
 
   // Убирает затенение с карты
@@ -99,7 +107,7 @@ window.map = (function () {
 
   return {
     MAP: MAP,
-    renderPinsOnMap: renderPinsOnMap,
+    updatePinsOnMap: updatePinsOnMap,
     uncoverMap: uncoverMap,
     renderCardOnMap: renderCardOnMap,
     checkCoords: checkCoords,

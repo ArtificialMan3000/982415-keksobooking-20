@@ -17,16 +17,19 @@ window.page = (function () {
 
   // Активирует страницу
   var activate = function () {
-    // Разблокируем поля формы и фильтров
+    // Разблокируем поля формы
     window.advertForm.enableAdvertForm();
-    window.filters.enableFilters();
-
     // Убираем затенение с карты
     window.map.uncoverMap();
     // Убираем затенение с формы
     window.advertForm.uncoverAdvertForm();
-    // Отрисовываем метки
-    window.data.loadAdvertData(window.map.renderPinsOnMap);
+    // Загружаем объявления с сервера
+    window.data.loadAdvertData(function (data) {
+      // Разблокируем фильтры
+      window.filters.enableFilters();
+      // Отрисовываем отфильтрованные метки
+      window.filters.applyFilters(data);
+    });
     isPageActive = true;
   };
 

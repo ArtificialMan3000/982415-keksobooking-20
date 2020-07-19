@@ -9,73 +9,18 @@ window.data = (function () {
     'house': 'дом',
     'bungalo': 'бунгало',
   };
+  // Массив объявлений
+  var advertData = [];
 
-  // Генерирует массив из 8 случайных объявлений
-  // var generateAdvertData = function () {
-  //   var advertsData = [];
-  //   var advertTypesEng = Object.keys(ADVERT_TYPES);
-  //   var roomsData = [
-  //     {
-  //       'roomsCount': 1,
-  //       'guestsCount': 1
-  //     },
-  //     {
-  //       'roomsCount': 2,
-  //       'guestsCount': 2
-  //     },
-  //     {
-  //       'roomsCount': 3,
-  //       'guestsCount': 3
-  //     },
-  //     {
-  //       'roomsCount': 100,
-  //       'guestsCount': 0
-  //     },
-  //   ];
-  //   var checkinData = ['12:00', '13:00', '14:00'];
-  //   // var checkoutData = ['12:00', '13:00', '14:00'];
-  //   var featuresData = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  //   var photosData = [
-  //     'http://o0.github.io/assets/images/tokyo/hotel1.jpg',
-  //     'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
-  //     'http://o0.github.io/assets/images/tokyo/hotel3.jpg'
-  //   ];
+  // Сохраняает список объявлений
+  var setAdvertData = function (data) {
+    advertData = data;
+  };
 
-  //   for (var i = 0; i < 8; i++) {
-  //     var advertData = {};
-  //     var advertNumber = i + 1;
-  //     var location = {
-  //       x: window.util.getRandomNumber(0, window.map.MAP.offsetWidth),
-  //       y: window.util.getRandomNumber(130, 630)
-  //     };
-  //     var roomData = window.util.getRandomArrayElement(roomsData);
-  //     var time = window.util.getRandomArrayElement(checkinData);
-
-  //     advertData.author = {
-  //       'avatar': 'img/avatars/user0' + advertNumber + '.png'
-  //     };
-  //     advertData.offer = {
-  //       'title': 'Объявление ' + advertNumber,
-  //       'address': location.x + ', ' + location.y,
-  //       'price': window.util.getRandomNumber(1000, 1000000),
-  //       'type': window.util.getRandomArrayElement(advertTypesEng),
-  //       'rooms': roomData.roomsCount,
-  //       'guests': roomData.guestsCount,
-  //       'checkin': time,
-  //       'checkout': time,
-  //       'features': window.util.generateRandomArray(featuresData),
-  //       'description': 'Описание ' + advertNumber,
-  //       'photos': window.util.generateRandomArray(photosData)
-  //     };
-  //     advertData.location = {
-  //       'x': location.x,
-  //       'y': location.y
-  //     };
-  //     advertsData.push(advertData);
-  //   }
-
-  //   return advertsData;
-  // };
+  // Получает список объявлений
+  var getAdvertData = function () {
+    return advertData;
+  };
 
   // Загружает список объявлений с сервера
   var loadAdvertData = function (successHandler, errorHandler) {
@@ -92,8 +37,19 @@ window.data = (function () {
         document.body.insertAdjacentElement('afterbegin', node);
       };
     }
+    var successHandlerSupplemented;
+    if (!successHandler) {
+      successHandlerSupplemented = function (data) {
+        window.data.setAdvertData(data);
+      };
+    } else {
+      successHandlerSupplemented = function (data) {
+        successHandler(data);
+        window.data.setAdvertData(data);
+      };
+    }
 
-    window.ajax.load('https://javascript.pages.academy/keksobooking/data', successHandler, errorHandler);
+    window.ajax.load('https://javascript.pages.academy/keksobooking/data', successHandlerSupplemented, errorHandler);
   };
 
   // Отправляет данные формы на сервер
@@ -115,6 +71,8 @@ window.data = (function () {
 
   return {
     ADVERT_TYPES: ADVERT_TYPES,
+    setAdvertData: setAdvertData,
+    getAdvertData: getAdvertData,
     loadAdvertData: loadAdvertData,
     uploadAdvertFormData: uploadAdvertFormData,
   };
