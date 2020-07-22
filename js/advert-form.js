@@ -3,51 +3,45 @@
 // Модуль формы добавления объявления
 window.advertForm = (function () {
   // Форма и поля формы
-  var AD_FORM = document.querySelector('.ad-form');
-  var SUBMIT_BUTTON = AD_FORM.querySelector('.ad-form__submit');
-  var RESET_BUTTON = AD_FORM.querySelector('.ad-form__reset');
-  var AVATAR_FIELD = AD_FORM.querySelector('#avatar');
-  // var TITLE_FIELD = AD_FORM.querySelector('#title');
-  var ADDRESS_FIELD = AD_FORM.querySelector('#address');
-  var TYPE_FIELD = AD_FORM.querySelector('#type');
-  var PRICE_FIELD = AD_FORM.querySelector('#price');
-  var TIMEIN_FIELD = AD_FORM.querySelector('#timein');
-  var TIMEOUT_FIELD = AD_FORM.querySelector('#timeout');
-  var ROOM_NUMBER_FIELD = AD_FORM.querySelector('#room_number');
-  var CAPACITY_FIELD = AD_FORM.querySelector('#capacity');
-  // var CHECKIN_FIELD = AD_FORM.querySelector('#timein');
-  // var CHECKOUT_FIELD = AD_FORM.querySelector('#timeout');
-  // var FEATURES_FIELDS = AD_FORM.querySelectorAll('.feature__checkbox');
-  var IMAGES_FIELD = AD_FORM.querySelector('#images');
-  // var DESCRIPTION_FIELD = AD_FORM.querySelector('#description');
+  var ADVERT_FORM = document.querySelector('.ad-form');
+  var SUBMIT_BUTTON = ADVERT_FORM.querySelector('.ad-form__submit');
+  var RESET_BUTTON = ADVERT_FORM.querySelector('.ad-form__reset');
+  var AVATAR_FIELD = ADVERT_FORM.querySelector('#avatar');
+  var TITLE_FIELD = ADVERT_FORM.querySelector('#title');
+  var ADDRESS_FIELD = ADVERT_FORM.querySelector('#address');
+  var TYPE_FIELD = ADVERT_FORM.querySelector('#type');
+  var PRICE_FIELD = ADVERT_FORM.querySelector('#price');
+  var TIMEIN_FIELD = ADVERT_FORM.querySelector('#timein');
+  var TIMEOUT_FIELD = ADVERT_FORM.querySelector('#timeout');
+  var ROOM_NUMBER_FIELD = ADVERT_FORM.querySelector('#room_number');
+  var CAPACITY_FIELD = ADVERT_FORM.querySelector('#capacity');
+  var IMAGES_FIELD = ADVERT_FORM.querySelector('#images');
   // Текущее значение поля адрес
-  var currAddress = '';
+  var currentAddress = '';
 
   // Отключает форму
   var disableAdvertForm = function () {
-    window.util.toggleForm(AD_FORM, true);
+    window.util.toggleForm(ADVERT_FORM, true);
   };
 
   // Включает форму
   var enableAdvertForm = function () {
-    window.util.toggleForm(AD_FORM, false);
-    // Оставляем поле адреса заблокированным
-    // ADDRESS_FIELD.disabled = true;
+    window.util.toggleForm(ADVERT_FORM, false);
   };
 
   // Убирает затенение с формыы
   var uncoverAdvertForm = function () {
-    AD_FORM.classList.remove('ad-form--disabled');
+    ADVERT_FORM.classList.remove('ad-form--disabled');
   };
 
   // Затеняет форму
   var coverAdvertForm = function () {
-    AD_FORM.classList.add('ad-form--disabled');
+    ADVERT_FORM.classList.add('ad-form--disabled');
   };
 
   // Сбрасывает форму
   var resetAdvertForm = function () {
-    AD_FORM.reset();
+    ADVERT_FORM.reset();
 
     // Устанавливаем адрес главной метки
     setAddressValue();
@@ -69,9 +63,9 @@ window.advertForm = (function () {
     coords.x = Math.round(coords.x);
     coords.y = Math.round(coords.y);
 
-    currAddress = coords.x + ', ' + coords.y;
-    ADDRESS_FIELD.value = currAddress;
-    return currAddress;
+    currentAddress = coords.x + ', ' + coords.y;
+    ADDRESS_FIELD.value = currentAddress;
+    return currentAddress;
   };
 
   // Устанавливает минимальное значение цены
@@ -170,7 +164,7 @@ window.advertForm = (function () {
 
     // Запрещаем изменять вручную поле адреса
     ADDRESS_FIELD.addEventListener('input', function () {
-      ADDRESS_FIELD.value = currAddress;
+      ADDRESS_FIELD.value = currentAddress;
     });
 
     // При изменении типа жилья устанавливаем новую минимальную цену
@@ -203,86 +197,59 @@ window.advertForm = (function () {
     setAdvertFormValidation();
   };
 
-  // Проверяет поле выбора количества гостей на валидность
-  var checkCapacityFieldValidity = function () {
-    var isCapacityFieldValid = true;
-    for (var i = 0; i < CAPACITY_FIELD.length; i++) {
-      if (CAPACITY_FIELD[i].disabled === true && CAPACITY_FIELD.value === CAPACITY_FIELD[i].value) {
-        isCapacityFieldValid = false;
-      }
-    }
-    if (isCapacityFieldValid) {
-      CAPACITY_FIELD.setCustomValidity('');
-      CAPACITY_FIELD.reportValidity();
-      return true;
-    } else {
-      CAPACITY_FIELD.setCustomValidity('Выберите разрешённое количество гостей');
-      CAPACITY_FIELD.reportValidity();
-      return false;
-    }
-  };
-
-  // Проверяет валидность загруженных изображений
-  var checkImagesValidity = function (images) {
-    for (var i = 0; i < images.length; i++) {
-      if (images[i].type !== 'image/jpeg' && images[i].type !== 'image/png') {
-        return false;
-      }
-    }
-    return true;
-  };
-
   // Устанавливает правила для валидации формы
   var setAdvertFormValidation = function () {
     // Проверка, является ли загруженный аватар изображением
-    AVATAR_FIELD.addEventListener('change', function (evt) {
-      if (!checkImagesValidity(evt.target.files)) {
-        evt.target.setCustomValidity('Аватар может быть только изображением в формате jpg или png');
-        evt.target.reportValidity();
-      } else {
-        evt.target.setCustomValidity('');
-        evt.target.reportValidity();
-      }
+    AVATAR_FIELD.addEventListener('change', function () {
+      window.validation.checkAvatarValidity();
     });
 
     // Проверка, являются ли загруженные фотографии изображениями
-    IMAGES_FIELD.addEventListener('change', function (evt) {
-      if (!checkImagesValidity(evt.target.files)) {
-        evt.target.setCustomValidity('Фотографии могут быть только изображениями в формате jpg или png');
-        evt.target.reportValidity();
-      } else {
-        evt.target.setCustomValidity('');
-        evt.target.reportValidity();
-      }
+    IMAGES_FIELD.addEventListener('change', function () {
+      window.validation.checkPhotosValidity();
     });
 
     // При изменении значения поля выбора количества комнат
     // проверяем на валидность поле выбора количества гостей
     ROOM_NUMBER_FIELD.addEventListener('change', function () {
-      checkCapacityFieldValidity();
+      window.validation.checkCapacityFieldValidity();
     });
 
     // При изменении значения поля выбора количества гостей проверяем его на валидность
     CAPACITY_FIELD.addEventListener('change', function () {
-      checkCapacityFieldValidity();
+      window.validation.checkCapacityFieldValidity();
     });
 
     // Дополнительные проверки на валидность при отправке формы
     SUBMIT_BUTTON.addEventListener('click', function (evt) {
       evt.preventDefault();
-      if (checkCapacityFieldValidity() && AD_FORM.reportValidity()) {
+      if (window.validation.checkCapacityFieldValidity() && ADVERT_FORM.reportValidity()) {
         window.data.uploadAdvertFormData(function () {
           window.notice.showSuccessMessage();
           window.page.deactivate();
         });
       }
+      // Помечаем красной рамкой невалидные поля
+      window.validation.markField(AVATAR_FIELD);
+      window.validation.markField(TITLE_FIELD);
+      window.validation.markField(ADDRESS_FIELD);
+      window.validation.markField(TYPE_FIELD);
+      window.validation.markField(PRICE_FIELD);
+      window.validation.markField(TIMEIN_FIELD);
+      window.validation.markField(TIMEOUT_FIELD);
+      window.validation.markField(ROOM_NUMBER_FIELD);
+      window.validation.markField(CAPACITY_FIELD);
+      window.validation.markField(IMAGES_FIELD);
     });
   };
 
   initAdvertForm();
 
   return {
-    AD_FORM: AD_FORM,
+    ADVERT_FORM: ADVERT_FORM,
+    CAPACITY_FIELD: CAPACITY_FIELD,
+    AVATAR_FIELD: AVATAR_FIELD,
+    IMAGES_FIELD: IMAGES_FIELD,
     disableAdvertForm: disableAdvertForm,
     enableAdvertForm: enableAdvertForm,
     uncoverAdvertForm: uncoverAdvertForm,

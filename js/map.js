@@ -21,10 +21,6 @@ window.map = (function () {
   // Отрисовывает метки на карте
   var renderPinsOnMap = function (data) {
     var mapPinFragment = document.createDocumentFragment();
-    // var pins = window.pin.getPins();
-    // if (pins.length === 0) {
-    //   pins = window.pin.createPins(data);
-    // }
     var pins = window.pin.createPins(data);
     for (var i = 0; i < pins.length; i++) {
       mapPinFragment.appendChild(pins[i]);
@@ -70,22 +66,22 @@ window.map = (function () {
 
   // Проверяет переданные координаты объекта на карте и возвращает предельно допустимые
   var checkCoords = function (x, y) {
-    var resCoords = {};
+    var resultCoords = {};
     if (x <= 0) {
-      resCoords.x = 0;
+      resultCoords.x = 0;
     } else if (x >= MAP_PINS_WIDTH) {
-      resCoords.x = MAP_PINS_WIDTH;
+      resultCoords.x = MAP_PINS_WIDTH;
     } else {
-      resCoords.x = x;
+      resultCoords.x = x;
     }
     if (y <= MAP_PINS_TOP) {
-      resCoords.y = MAP_PINS_TOP;
+      resultCoords.y = MAP_PINS_TOP;
     } else if (y >= MAP_PINS_BOTTOM) {
-      resCoords.y = MAP_PINS_BOTTOM;
+      resultCoords.y = MAP_PINS_BOTTOM;
     } else {
-      resCoords.y = y;
+      resultCoords.y = y;
     }
-    return resCoords;
+    return resultCoords;
   };
 
   // Центрирует главную метку

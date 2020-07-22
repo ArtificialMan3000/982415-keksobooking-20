@@ -39,8 +39,10 @@ window.pin = (function () {
   var createPins = function (data) {
     pins = [];
     for (var i = 0; i < data.length; i++) {
-      var pin = createPin(data[i]);
-      pins.push(pin);
+      if (data[i].offer) {
+        var pin = createPin(data[i]);
+        pins.push(pin);
+      }
     }
     return pins;
   };
@@ -51,11 +53,6 @@ window.pin = (function () {
       pins[i].remove();
     }
   };
-
-  // Получает массив меток
-  // var getPins = function () {
-  //   return pins;
-  // };
 
   // Определение координаты главной метки
   var getPinCoords = function () {
@@ -101,11 +98,9 @@ window.pin = (function () {
 
   // Перемещает указатель главной метки в указанные координаты
   var moveMainPin = function (x, y) {
-    // console.log(isMainPinActive);
 
     // Координаты указателя метки
     var coords = window.map.checkCoords(x, y);
-    // console.log(coords);
 
     var CSSCoords = transformPointToCSSMainPinCoords(coords.x, coords.y);
     MAIN_PIN.style.left = CSSCoords.x + 'px';
@@ -190,6 +185,5 @@ window.pin = (function () {
     moveMainPin: moveMainPin,
     activateMainPin: activateMainPin,
     deactivateMainPin: deactivateMainPin,
-    // getPins: getPins,
   };
 })();

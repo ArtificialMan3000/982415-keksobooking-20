@@ -2,6 +2,10 @@
 
 // Модуль данных объявлений
 window.data = (function () {
+  // Адрес, с которого загружаются данные объявлений
+  var LOAD_URL = 'https://javascript.pages.academy/keksobooking/data';
+  // Адрес, на который отправляется форма нового объявления
+  var UPLOAD_URL = 'https://javascript.pages.academy/keksobooking';
   // Типы объявлений
   var ADVERT_TYPES = {
     'palace': 'дворец',
@@ -49,12 +53,12 @@ window.data = (function () {
       };
     }
 
-    window.ajax.load('https://javascript.pages.academy/keksobooking/data', successHandlerSupplemented, errorHandler);
+    window.ajax.load(LOAD_URL, successHandlerSupplemented, errorHandler);
   };
 
   // Отправляет данные формы на сервер
   var uploadAdvertFormData = function (successHandler, errorHandler) {
-    var advertFormData = new FormData(window.advertForm.AD_FORM);
+    var advertFormData = new FormData(window.advertForm.ADVERT_FORM);
     if (!successHandler) {
       successHandler = function () {
         window.notice.showSuccessMessage();
@@ -65,7 +69,7 @@ window.data = (function () {
         window.notice.showErrorMessage();
       };
     }
-    window.ajax.upload(advertFormData, 'https://javascript.pages.academy/keksobooking', successHandler, errorHandler);
+    window.ajax.upload(advertFormData, UPLOAD_URL, successHandler, errorHandler);
   };
 
 

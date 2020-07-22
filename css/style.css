@@ -1249,3 +1249,11 @@ fieldset {
 .hidden {
   display: none;
 }
+
+.ad-form__input--invalid {
+  outline: 1px solid red;
+}
+
+.ad-form__input--invalid + label {
+  outline: 1px solid red;
+}

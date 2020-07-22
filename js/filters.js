@@ -48,17 +48,57 @@ window.filters = (function () {
     disableFilters();
   };
 
-  // Ограничивает количество показываемых объявлений
-  var limitAdverts = function (data) {
-    return data.slice(0, ADVERTS_LIMIT);
+  // Фильтрует по типу объявления
+  var filterByType = function (advert) {
+    var type = Filters.TYPE.value;
+    if (type !== 'any' && type !== advert.offer.type) {
+      return false;
+    }
+    return true;
+  };
+
+  // Фильтрует по цене
+  var filterByPrice = function (advert) {
+    var priceRange = Filters.PRICE.value;
+    if (priceRange !== 'any' &&
+          (PRICE_RANGES[priceRange].min > advert.offer.price || PRICE_RANGES[priceRange].max < advert.offer.price)) {
+      return false;
+    }
+    return true;
+  };
+
+  // Фильтрует по количеству комнат
+  var filterByRooms = function (advert) {
+    var rooms = Filters.ROOMS.value;
+    if (rooms !== 'any' && Number(rooms) !== advert.offer.rooms) {
+      return false;
+    }
+    return true;
+  };
+
+  // Фильтрует по количеству гостей
+  var filterByGuests = function (advert) {
+    var guests = Filters.GUESTS.value;
+    if (guests !== 'any' && Number(guests) !== advert.offer.guests) {
+      return false;
+    }
+    return true;
+  };
+
+  // Фильтрует по удобствам
+  var filterByFeatures = function (advert, features) {
+    if (features.length > 0) {
+      for (var i = 0; i < features.length; i++) {
+        if (advert.offer.features.indexOf(features[i]) < 0) {
+          return false;
+        }
+      }
+    }
+    return true;
   };
 
   // Применяет фильтры к показываемым объявлениям
   var applyFilters = function (data) {
-    var type = Filters.TYPE.value;
-    var priceRange = Filters.PRICE.value;
-    var rooms = Filters.ROOMS.value;
-    var guests = Filters.GUESTS.value;
     var features = Array.from(Filters.FEATURES)
       .filter(function (featureElem) {
         return featureElem.checked === true;
@@ -66,31 +106,22 @@ window.filters = (function () {
       .map(function (featureElem) {
         return featureElem.value;
       });
-    var filteredData = data;
-    filteredData = data.filter(function (elem) {
-      if (type !== 'any' && type !== elem.offer.type) {
-        return false;
+    var filteredData = [];
+    // Используется цикл for, т.к. метод filter нельзя прервать
+    for (var i = 0; i < data.length; i++) {
+      if (
+        filterByType(data[i]) &&
+        filterByPrice(data[i]) &&
+        filterByRooms(data[i]) &&
+        filterByGuests(data[i]) &&
+        filterByFeatures(data[i], features)
+      ) {
+        filteredData.push(data[i]);
       }
-      if (priceRange !== 'any' &&
-          (PRICE_RANGES[priceRange].min > elem.offer.price || PRICE_RANGES[priceRange].max < elem.offer.price)) {
-        return false;
+      if (filteredData.length >= ADVERTS_LIMIT) {
+        break;
       }
-      if (rooms !== 'any' && Number(rooms) !== elem.offer.rooms) {
-        return false;
-      }
-      if (guests !== 'any' && Number(guests) !== elem.offer.guests) {
-        return false;
-      }
-      if (features.length > 0) {
-        for (var i = 0; i < features.length; i++) {
-          if (elem.offer.features.indexOf(features[i]) < 0) {
-            return false;
-          }
-        }
-      }
-      return true;
-    });
-    filteredData = limitAdverts(filteredData);
+    }
     window.map.updatePinsOnMap(filteredData);
   };
 
@@ -106,8 +137,8 @@ window.filters = (function () {
     Filters.PRICE.addEventListener('change', filterChangeHandler);
     Filters.ROOMS.addEventListener('change', filterChangeHandler);
     Filters.GUESTS.addEventListener('change', filterChangeHandler);
-    Filters.FEATURES.forEach(function (elem) {
-      elem.addEventListener('change', filterChangeHandler);
+    Filters.FEATURES.forEach(function (element) {
+      element.addEventListener('change', filterChangeHandler);
     });
   };
 
@@ -117,8 +148,8 @@ window.filters = (function () {
     Filters.PRICE.removeEventListener('change', filterChangeHandler);
     Filters.ROOMS.removeEventListener('change', filterChangeHandler);
     Filters.GUESTS.removeEventListener('change', filterChangeHandler);
-    Filters.FEATURES.forEach(function (elem) {
-      elem.removeEventListener('change', filterChangeHandler);
+    Filters.FEATURES.forEach(function (element) {
+      element.removeEventListener('change', filterChangeHandler);
     });
   };
 
