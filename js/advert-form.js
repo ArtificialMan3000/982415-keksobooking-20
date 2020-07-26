@@ -233,7 +233,7 @@ window.advertForm = (function () {
   var setAdvertFormValidation = function () {
     // Проверка, является ли загруженный аватар изображением
     AVATAR_FIELD.addEventListener('change', function () {
-      if (window.validation.checkAvatarValidity()) {
+      if (window.validation.checkAvatarValidity() && AVATAR_FIELD.files[0]) {
         window.fileLoader.readFile(AVATAR_FIELD.files[0], showAvatar);
       }
     });
