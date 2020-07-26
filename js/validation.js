@@ -47,9 +47,11 @@ window.validation = (function () {
     if (!checkImagesValidity(avatarField.files)) {
       avatarField.setCustomValidity('Аватар может быть только изображением в формате jpg или png');
       avatarField.reportValidity();
+      return false;
     } else {
       avatarField.setCustomValidity('');
       avatarField.reportValidity();
+      return true;
     }
   };
   // Проверяет валидность фотографий
@@ -58,9 +60,11 @@ window.validation = (function () {
     if (!checkImagesValidity(photosField.files)) {
       photosField.setCustomValidity('Фотографии могут быть только изображениями в формате jpg или png');
       photosField.reportValidity();
+      return false;
     } else {
       photosField.setCustomValidity('');
       photosField.reportValidity();
+      return true;
     }
   };
 

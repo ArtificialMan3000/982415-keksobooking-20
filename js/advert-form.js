@@ -16,8 +16,22 @@ window.advertForm = (function () {
   var ROOM_NUMBER_FIELD = ADVERT_FORM.querySelector('#room_number');
   var CAPACITY_FIELD = ADVERT_FORM.querySelector('#capacity');
   var IMAGES_FIELD = ADVERT_FORM.querySelector('#images');
+
+  // Элементы для показа аватара и фотографии
+  var AVATAR_PREVIEW = ADVERT_FORM.querySelector('.ad-form-header__preview img');
+  var IMAGES_PREVIEW_DIV = ADVERT_FORM.querySelector('.ad-form__photo');
+  var imagesPreviewImg = null;
+
   // Текущее значение поля адрес
   var currentAddress = '';
+
+  // Минимальные значения для поля цены
+  var MinPriceValues = {
+    FLAT: 1000,
+    HOUSE: 5000,
+    PALACE: 10000,
+    BUNGALO: 0
+  };
 
   // Отключает форму
   var disableAdvertForm = function () {
@@ -73,19 +87,19 @@ window.advertForm = (function () {
     var minPrice = 0;
     switch (TYPE_FIELD.value) {
       case 'flat': {
-        minPrice = 1000;
+        minPrice = MinPriceValues.FLAT;
         break;
       }
       case 'house': {
-        minPrice = 5000;
+        minPrice = MinPriceValues.HOUSE;
         break;
       }
       case 'palace': {
-        minPrice = 10000;
+        minPrice = MinPriceValues.PALACE;
         break;
       }
       default:
-        minPrice = 0;
+        minPrice = MinPriceValues.BUNGALO;
     }
     PRICE_FIELD.min = minPrice;
     PRICE_FIELD.placeholder = minPrice;
@@ -151,6 +165,24 @@ window.advertForm = (function () {
     }
   };
 
+  // Отображает аватар пользователя
+  var showAvatar = function (image) {
+    AVATAR_PREVIEW.src = image;
+  };
+
+  // Отображает фотографию жилья
+  var showPhoto = function (image) {
+    if (!imagesPreviewImg) {
+      imagesPreviewImg = IMAGES_PREVIEW_DIV.querySelector('img');
+      imagesPreviewImg = document.createElement('img');
+      imagesPreviewImg.width = 70;
+      imagesPreviewImg.height = 70;
+      imagesPreviewImg.alt = 'Фотография жилья';
+    }
+    imagesPreviewImg.src = image;
+    IMAGES_PREVIEW_DIV.appendChild(imagesPreviewImg);
+  };
+
   // Инициализирует форму
   var initAdvertForm = function () {
     // Устанавливаем адрес главной метки
@@ -201,12 +233,16 @@ window.advertForm = (function () {
   var setAdvertFormValidation = function () {
     // Проверка, является ли загруженный аватар изображением
     AVATAR_FIELD.addEventListener('change', function () {
-      window.validation.checkAvatarValidity();
+      if (window.validation.checkAvatarValidity()) {
+        window.fileLoader.readFile(AVATAR_FIELD.files[0], showAvatar);
+      }
     });
 
     // Проверка, являются ли загруженные фотографии изображениями
     IMAGES_FIELD.addEventListener('change', function () {
-      window.validation.checkPhotosValidity();
+      if (window.validation.checkPhotosValidity()) {
+        window.fileLoader.readFile(IMAGES_FIELD.files[0], showPhoto);
+      }
     });
 
     // При изменении значения поля выбора количества комнат

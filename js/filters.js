@@ -51,38 +51,26 @@ window.filters = (function () {
   // Фильтрует по типу объявления
   var filterByType = function (advert) {
     var type = Filters.TYPE.value;
-    if (type !== 'any' && type !== advert.offer.type) {
-      return false;
-    }
-    return true;
+    return !(type !== 'any' && type !== advert.offer.type);
   };
 
   // Фильтрует по цене
   var filterByPrice = function (advert) {
     var priceRange = Filters.PRICE.value;
-    if (priceRange !== 'any' &&
-          (PRICE_RANGES[priceRange].min > advert.offer.price || PRICE_RANGES[priceRange].max < advert.offer.price)) {
-      return false;
-    }
-    return true;
+    return !(priceRange !== 'any' &&
+    (PRICE_RANGES[priceRange].min > advert.offer.price || PRICE_RANGES[priceRange].max < advert.offer.price));
   };
 
   // Фильтрует по количеству комнат
   var filterByRooms = function (advert) {
     var rooms = Filters.ROOMS.value;
-    if (rooms !== 'any' && Number(rooms) !== advert.offer.rooms) {
-      return false;
-    }
-    return true;
+    return !(rooms !== 'any' && Number(rooms) !== advert.offer.rooms);
   };
 
   // Фильтрует по количеству гостей
   var filterByGuests = function (advert) {
     var guests = Filters.GUESTS.value;
-    if (guests !== 'any' && Number(guests) !== advert.offer.guests) {
-      return false;
-    }
-    return true;
+    return !(guests !== 'any' && Number(guests) !== advert.offer.guests);
   };
 
   // Фильтрует по удобствам
